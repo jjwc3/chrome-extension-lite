@@ -19,7 +19,8 @@
       "resources": [
         "src/config.mjs",
         "src/utils.mjs",
-        "tailwindcss.js"
+        "tailwindcss.js",
+        "icons/*"
       ],
       "type": "module",
       "matches": [
