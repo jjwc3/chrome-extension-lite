@@ -7,7 +7,7 @@ import { getConfig, setConfig } from './config.mjs';
     // 캡쳐 버튼 활성화
     setInterval(() => {
         const btn = document.getElementById("INGDLC-CAPTURE");
-        
+
         if (btn.onclick) return;
 
         document.getElementById("INGDLC-CAPTURE").style.color = '#7398ff';
@@ -50,8 +50,90 @@ import { getConfig, setConfig } from './config.mjs';
         a.click()
         a.remove()
         window.URL.revokeObjectURL(url);
-        
+
         checkLawEnabled = 0;
         await setConfig("twitch.checkLawAlert.enabled", checkLawEnabled);
     }
+
+    // const distinguishElement = document.getElementsByClassName("video_edit")[0];
+
+    // if (distinguishElement) {
+    //     clearInterval(buttonClick);
+    //     console.log(distinguishElement);
+    // } else {
+    //     const buttonClick = setInterval(() => {
+    //         const btn = document.getElementById("INGDLC-DL");
+
+    //         if (btn.onclick) return;
+
+    //         btn.onclick = download;
+
+    //     }, 600);
+    // }
+
+
+    //다운 버튼
+    const buttonClick = setInterval(() => {
+        const btn = document.getElementById("INGDLC-DL");
+        if (document.getElementsByClassName("video_edit")[0]) clearInterval(buttonClick);
+        if (btn?.onclick) return;
+
+        btn.onclick = download;
+
+    }, 600);
+
+
+    // m3u8 URL Service Worker 로부터 받아오기
+    let m3u8Url;
+    chrome.runtime.onMessage.addListener(
+        function(request, sender, sendResponse) {
+            if (request.url) {
+                m3u8Url = request.url;
+                setTimeout(() => {
+                    document.getElementById("INGDLC-DL-IMG").style.filter = "opacity(0.5) drop-shadow(0 0 0 #7398ff) saturate(500%)";
+                }, 300);
+            }
+        }
+    );
+
+    // const reader = new FileReader();
+    // const regex = /[^0-9]/g;
+
+    // FFmpeg 명령어 복사
+    async function download() {
+        // console.log(document.getElementsByClassName("video_edit")[0]);
+        const dlAlert = document.getElementById("INGDLC-DL-ALERT");
+        console.log(datetime());
+        console.log(m3u8Url);
+        // fetch(m3u8Url)
+        //     .then(response => response.text())
+        //     .then(data => {
+        //         let tsArray = [];
+        //         console.log(data);
+        //         let dataArray = data.split("\n");
+        //         let result = Number(dataArray[dataArray.length-3].replace(regex, ""));
+        //         let beforeTs = m3u8Url.substring(0,m3u8Url.length-13);
+        //         for (let i=0; i<=result; i++) {
+        //             tsArray.push(`${beforeTs}seg-${i}.ts`)
+        //         }
+        //         console.log(tsArray);
+
+        //     })
+        //     .catch((error) => {
+        //         console.error('Error:', error);
+        //     });
+        let path = await getConfig("twitch.path");
+        console.log(path);
+        let ffmpegCommand = `ffmpeg -i "${m3u8Url}" -c copy "${path}${datetime()}.mp4"`
+        if (!checkLaw()) return;
+        copyToClipboardOne(ffmpegCommand);
+        document.getElementById("INGDLC-DL-IMG").style.filter = "";
+
+        dlAlert.style.display = "block";
+        setTimeout(function(){dlAlert.style.display = "none"},3000);
+
+        checkLawEnabled = 0;
+        await setConfig("twitch.checkLawAlert.enabled", checkLawEnabled);
+    }
+
 })();

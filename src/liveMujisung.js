@@ -11,7 +11,7 @@ import { getConfig, getLargeStorage } from './config.mjs';
     // 도배 버튼 클릭 시 창 띄우기
     setInterval(() => {
         const btn = document.getElementById("INGDLC-BTN-MUJISUNG");
-    
+
         if (btn.onclick) return;
 
         if (enabled === 2) btn.style.display = "block";
@@ -65,7 +65,7 @@ import { getConfig, getLargeStorage } from './config.mjs';
         // console.log(mujisungList);
 
         if (!mujisungList) mujisungList = ["INGDLC 팝업창을 실행하면 도배 리스트를 서버에서 불러옵니다."];
-    
+
         const mujisungCustomList = (await getConfig("twitch.mujisung.custom")).split("\n");
         let exceptionList = [];
         const exceptionTest = (await getConfig("twitch.mujisung.exception")).split("\n");
@@ -91,7 +91,7 @@ import { getConfig, getLargeStorage } from './config.mjs';
             box.style.textOverflow = "ellipsis";
             box.style.whiteSpace = "nowrap";
 
-            box.onclick = function () { 
+            box.onclick = function () {
                 const v = this.innerHTML;
 
                 if (v.indexOf("⬛⬛⬛") === 0) return;
@@ -122,7 +122,7 @@ import { getConfig, getLargeStorage } from './config.mjs';
             const chatLog = [];
             const shortLog = [];
             const allChats = document.getElementsByClassName("msg");
-            
+
             for (let i = 0; i < allChats.length; i++) {
                 const chat = allChats[i].innerHTML;
                 const short = chat.substr(0, 15);
@@ -139,7 +139,7 @@ import { getConfig, getLargeStorage } from './config.mjs';
                             if (!chat.includes(e)) chatPush();
                         })
                     }
-                    
+
                 }
             }
 
@@ -150,7 +150,7 @@ import { getConfig, getLargeStorage } from './config.mjs';
                 box.style.paddingLeft = "15px";
             }
         }
-        
+
         const mujisungCustomList2 = [];
         mujisungCustomList.forEach(v => {
             const trim = v.trim();
@@ -159,7 +159,7 @@ import { getConfig, getLargeStorage } from './config.mjs';
                 mujisungCustomList2.push(trim);
             }
         });
-    
+
 
         if (mujisungCustomList2.length) {
             mujisungCustomList2.unshift("⬛⬛⬛ 사용자 설정 도배목록")
@@ -187,12 +187,12 @@ import { getConfig, getLargeStorage } from './config.mjs';
 
     const mujisung = async () => {
         const el = document.getElementById("INGDLC-MUJISUNG");
-        const chat_area = document.getElementById("chat_area");
+        // const chat_area = document.getElementById("chat_area");
 
         if (el.style.display === "none") {
             document.getElementById("INGDLC-MUJISUNG-INPUT").value = "";
             el.style.display = "flex";
-            chat_area.style.top = "226px";
+            // chat_area.style.top = "226px";
 
             await updateList();
             setTimeout(() => {
@@ -200,7 +200,7 @@ import { getConfig, getLargeStorage } from './config.mjs';
             }, 300)
         } else {
             el.style.display = "none";
-            chat_area.style.top = "40px";
+            // chat_area.style.top = "40px";
 
             document.getElementsByClassName("write_area")[0].focus();
         }
