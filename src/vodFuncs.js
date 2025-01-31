@@ -1,24 +1,27 @@
-import { datetime, copyToClipboardOne } from "./utils.mjs";
+import { datetime } from "./utils.mjs";
 import { getConfig, setConfig } from './config.mjs';
 
 (async () => {
     let checkLawEnabled = await getConfig("twitch.checkLawAlert.enabled");
+    let video;
 
     // 캡쳐 버튼 활성화
     setInterval(() => {
-        const btn = document.getElementById("INGDLC-CAPTURE");
+        const btn = document.getElementById("INGDLC-BTN-CAPTURE");
 
+        if (!btn) return;
         if (btn.onclick) return;
 
-        document.getElementById("INGDLC-CAPTURE").style.color = '#7398ff';
+        btn.style.color = '#7398ff';
 
         btn.onclick = capture;
 
+        video = document.getElementsByTagName("video")[0];
     }, 600);
 
     const checkLaw = () => {
         if (checkLawEnabled) {
-            return confirm("설정한 화질대로 캡쳐됩니다. 최대화질로 설정 후 캡쳐해주세요.\n\nBJ·저작권자의 동의 없이 녹화된 영상 및 캡쳐 이미지를 공유하는 경우, 그 책임은 전적으로 사용자에게 있습니다.\n\n이를 이해하고 동의하십니까?\n\n이 창은 최초 동의 후 나타나지 않습니다.");
+            return confirm("설정한 화질대로 캡쳐됩니다. 최대화질로 설정 후 캡쳐해주세요.\n\n스트리머·저작권자의 동의 없이 녹화된 영상 및 캡쳐 이미지를 공유하는 경우, 그 책임은 전적으로 사용자에게 있습니다.\n\n이를 이해하고 동의하십니까?\n\n이 창은 최초 동의 후 나타나지 않습니다.");
         } else {
             return true;
         }
@@ -46,7 +49,7 @@ import { getConfig, setConfig } from './config.mjs';
 
         if (!checkLaw()) return;
 
-        a.download = `[잉친쓰 DLC] 캡쳐 ${datetime()}.png`
+        a.download = `[INGDLC] Capture ${datetime()}.png`
         a.click()
         a.remove()
         window.URL.revokeObjectURL(url);
@@ -74,11 +77,18 @@ import { getConfig, setConfig } from './config.mjs';
 
     //다운 버튼
     // const buttonClick = setInterval(() => {
-    //     const btn = document.getElementById("INGDLC-DL");
-    //     if (document.getElementsByClassName("video_edit")[0]) clearInterval(buttonClick);
-    //     if (btn?.onclick) return;
+    //     try {
+    //         if (document.getElementsByClassName("video_edit")[0] && !document.getElementsByClassName("video_edit")[0]?.className.includes("off")) return;
+    //         const btn = document.getElementById("INGDLC-BTN-DL");
+    //         // if (document.getElementsByClassName("video_edit")[0]) clearInterval(buttonClick);
+    //         clearInterval(buttonClick);
+    //         if (btn?.onclick) return;
     //
-    //     btn.onclick = download;
+    //         btn.onclick = download;
+    //     } catch(e){
+    //         console.log("Waiting for Video Play.");
+    //     }
+    //
     //
     // }, 600);
 
@@ -86,9 +96,10 @@ import { getConfig, setConfig } from './config.mjs';
     // m3u8 URL Service Worker 로부터 받아오기
     // let m3u8Url;
     // chrome.runtime.onMessage.addListener(
-    //     function(request, sender, sendResponse) {
+    //     function(request) {
     //         if (request.url) {
     //             m3u8Url = request.url;
+    //             if (document.getElementsByClassName("video_edit")[0] && !document.getElementsByClassName("video_edit")[0]?.className.includes("off")) return;
     //             setTimeout(() => {
     //                 document.getElementById("INGDLC-DL-IMG").style.filter = "opacity(0.5) drop-shadow(0 0 0 #7398ff) saturate(500%)";
     //             }, 300);
@@ -105,26 +116,36 @@ import { getConfig, setConfig } from './config.mjs';
     //     const dlAlert = document.getElementById("INGDLC-DL-ALERT");
     //     console.log(datetime());
     //     console.log(m3u8Url);
-        // fetch(m3u8Url)
-        //     .then(response => response.text())
-        //     .then(data => {
-        //         let tsArray = [];
-        //         console.log(data);
-        //         let dataArray = data.split("\n");
-        //         let result = Number(dataArray[dataArray.length-3].replace(regex, ""));
-        //         let beforeTs = m3u8Url.substring(0,m3u8Url.length-13);
-        //         for (let i=0; i<=result; i++) {
-        //             tsArray.push(`${beforeTs}seg-${i}.ts`)
-        //         }
-        //         console.log(tsArray);
-
-        //     })
-        //     .catch((error) => {
-        //         console.error('Error:', error);
-        //     });
-    //     let path = await getConfig("twitch.path");
+    //     // fetch(m3u8Url)
+    //     //     .then(response => response.text())
+    //     //     .then(data => {
+    //     //         let tsArray = [];
+    //     //         console.log(data);
+    //     //         let dataArray = data.split("\n");
+    //     //         let result = Number(dataArray[dataArray.length-3].replace(regex, ""));
+    //     //         let beforeTs = m3u8Url.substring(0,m3u8Url.length-13);
+    //     //         for (let i=0; i<=result; i++) {
+    //     //             tsArray.push(`${beforeTs}seg-${i}.ts`)
+    //     //         }
+    //     //         console.log(tsArray);
+    //
+    //     //     })
+    //     //     .catch((error) => {
+    //     //         console.error('Error:', error);
+    //     //     });
+    //     let path = (await getConfig("twitch.path.path")).trim();
+    //     let os = await getConfig("twitch.path.os");
+    //     if (os === 0) {
+    //         if (path !== "" && !path.endsWith('\\')) {
+    //             path += "\\";
+    //         }
+    //     } else {
+    //         if (path !== "" && !path.endsWith("/")) {
+    //             path += "/";
+    //         }
+    //     }
     //     console.log(path);
-    //     let ffmpegCommand = `ffmpeg -i "${m3u8Url}" -c copy "${path}${datetime()}.mp4"`
+    //     let ffmpegCommand = `ffmpeg -i "${m3u8Url}" -c copy "${path}${datetime()}.mp4"`;
     //     if (!checkLaw()) return;
     //     copyToClipboardOne(ffmpegCommand);
     //     document.getElementById("INGDLC-DL-IMG").style.filter = "";

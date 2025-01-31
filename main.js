@@ -88,11 +88,11 @@ const saveFn = async (e) => {
     }
 })();
 
-document.getElementById("config-reset").addEventListener("click", () => {
+document.getElementById("config-reset").addEventListener("click", async () => {
     if (confirm("모든 설정을 초기화하시겠습니까?")) {
         alert("초기화되었습니다.")
 
-        chrome.storage.sync.set({ config: null });
+        await chrome.storage.sync.set({ config: null });
         location.reload();
     }
 });
@@ -123,10 +123,10 @@ Mujisung
 let mujisungList;
 
 document.getElementById("mujisung-search").addEventListener("change", updateMujisungList);
-document.getElementById("twitch.mujisung.custom").addEventListener("keyup", (e) => {
+document.getElementById("twitch.mujisung.custom").addEventListener("keyup", () => {
     updateMujisungList();
 });
-document.getElementById("twitch.mujisung.exception").addEventListener("keyup", (e) => {
+document.getElementById("twitch.mujisung.exception").addEventListener("keyup", () => {
     updateMujisungList();
 });
 
@@ -166,27 +166,13 @@ function updateMujisungList(){
         new Option('', '', false)
     );
 
-    // mujisungList.forEach(option => {
-    //     if (option.includes(keyword) || option.length < 2 || option.includes('⬛⬛⬛')) {
-    //         document.getElementById('mujisung').options.add(
-    //             new Option(maxLen(option), option, false)
-    //         )
-    //     }
-    // });
-    // let mujisungValues = Object.values(mujisungList);
-    // console.log(mujisungValues);
-    // for (let i of mujisungValues) {
-    //     if (typeof i == "string") continue;
-    //     let pair = Object.entries(i);
-
-    // }
     let mujisungPair = Object.entries(mujisungList);
     for (let i = 0; i < mujisungPair.length; i++) {
-        let mujisungLargeKey = mujisungPair[i][0];
+        // let mujisungLargeKey = mujisungPair[i][0];
         if (typeof mujisungPair[i][1] == "string") continue;
         let mujisungPairSecond = Object.entries(mujisungPair[i][1]);
         for (let j = 0; j < mujisungPairSecond.length; j++) {
-            let tempArray = [];
+            // let tempArray = [];
             mujisungPairSecond[j][1].forEach(t => {
                 if (mujisungPairSecond[j][0].includes(keyword) || t.includes(keyword) || t.length < 2 || t.includes('⬛⬛⬛')) {
                     document.getElementById('mujisung').options.add(
@@ -197,23 +183,3 @@ function updateMujisungList(){
         }
     }
 }
-
-/********************
-Save Path
-********************/
-// document.getElementById("pathSave").addEventListener("click", async () => {
-//     document.getElementById("pathSaveComplete").style.display = 'block';
-//     let firstPath = document.getElementById("pathInput").value;
-//     if (firstPath.includes('\\') && firstPath[firstPath.length-1] !== '\\') {
-//         firstPath = firstPath+'\\';
-//     }
-//     if (firstPath.includes('/') && firstPath[firstPath.length-1] !== '/') {
-//         firstPath += '/';
-//     }
-//
-//     await setConfig("twitch.path",firstPath);
-//     console.log(await getConfig("twitch.path"));
-//     setTimeout(() => {
-//         document.getElementById("pathSaveComplete").style.display = 'none';
-//     }, 2000)
-// })
